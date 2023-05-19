@@ -4,8 +4,6 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { AdminController } from './admin/admin.controller';
 import { AppController } from './app.controller';
 import { AuthController } from './auth/auth.controller';
-import { UserController } from './user/user.controller';
-import { UserService } from './user/user.service';
 import { UserModule } from './user/user.module';
 
 @Module({
@@ -21,10 +19,10 @@ import { UserModule } from './user/user.module';
       database: 'music_recommendation',
       entities: [__dirname + '/**/**/*.entity{.ts,.js}'],
       synchronize: true,
+      dropSchema: false,
     }),
     UserModule,
   ],
   controllers: [AppController, AuthController, AdminController],
-  providers: [],
 })
 export class AppModule { }

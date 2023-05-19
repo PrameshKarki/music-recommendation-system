@@ -4,12 +4,18 @@ export abstract class Base extends BaseEntity {
     @PrimaryGeneratedColumn()
     id: string;
 
-    @CreateDateColumn()
+    @CreateDateColumn({
+        select: false
+    })
     createdAt: Date;
 
-    @UpdateDateColumn()
+    @UpdateDateColumn({
+        select: false
+    })
     updatedAt: Date;
 
-    @DeleteDateColumn()
+    @DeleteDateColumn({
+        select: false
+    })
     deletedAt: Date;
 }

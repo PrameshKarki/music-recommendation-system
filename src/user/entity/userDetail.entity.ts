@@ -26,7 +26,7 @@ export class Detail extends Base {
     @Column()
     gender: Gender
 
-    @OneToOne(() => User, user => user.detail,{onDelete:"CASCADE"})
+    @OneToOne(() => User, user => user.detail, { onDelete: "CASCADE" })
     @JoinColumn({
         name: "user_id",
     })

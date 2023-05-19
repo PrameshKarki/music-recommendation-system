@@ -14,6 +14,16 @@ export class UserService {
         private userDetailsRepository: Repository<Detail>
     ) { }
 
+    async findOne(value: string) {
+        return await this.usersRepository.createQueryBuilder('user')
+            .leftJoinAndSelect('user.detail', 'detail')
+            .where('user.id = :id', { id: value })
+            .orWhere('user.email = :email', { email: value })
+            .orWhere('user.mobileNumber = :mobileNumber', { mobileNumber: value })
+            .getOne();
+    }
+
+
     async create(body: UserRegisterDTO) {
         const { detail, ...rest } = body
         const userDetail = await this.userDetailsRepository.create(detail).save();
