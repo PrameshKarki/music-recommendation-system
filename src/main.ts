@@ -9,6 +9,7 @@ async function bootstrap() {
     .setTitle('Music Recommendation Sytem')
     .setDescription('REST API for Music Recommendation System')
     .setVersion('1.0')
+    .addBearerAuth()
     .build();
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api', app, document);

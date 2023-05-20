@@ -26,7 +26,8 @@ export class AuthController {
         if (user) throw new BadRequestException("User already exists")
         user = await this.userService.findOne(body.mobileNumber)
         if (user) throw new BadRequestException("User already exists")
-        return await this.userService.create(body);
+        user = await this.userService.create(body);
+        return this.authService.login(user)
 
     }
 

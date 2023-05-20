@@ -15,7 +15,7 @@ export class UserService {
     ) { }
 
     async findOne(value: string, fetchPassword: boolean = false) {
-        const query = await this.usersRepository.createQueryBuilder('user')
+        const query = this.usersRepository.createQueryBuilder('user')
             .leftJoinAndSelect('user.detail', 'detail')
             .where('user.id = :id', { id: value })
             .orWhere('user.email = :email', { email: value })
