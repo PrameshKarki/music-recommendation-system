@@ -1,6 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Brackets, Repository } from 'typeorm';
+import { Brackets, In, Repository } from 'typeorm';
 import { Media } from '../media/entities/media.entity';
 import { User } from '../user/entity/user.entity';
 import { CreateMusicDto } from './dto/create-music.dto';
@@ -25,6 +25,12 @@ export class MusicService {
     }).save();
   }
 
+  async findAllByIds(ids: string[]) {
+    return await this.musicRepository.findBy({
+      id: In(ids)
+    });
+  }
+
   async find(take: number, skip: number, searchQuery?: string, user?: User) {
     const query = this.musicRepository.createQueryBuilder("music")
       .leftJoinAndSelect("music.media", "media")
@@ -45,6 +51,8 @@ export class MusicService {
       query.andWhere("uploadedBy.id = :user", { user: user.id })
     }
 
+    query.andWhere("music.isPublished = :isPublished", { isPublished: true })
+
     return await query.getManyAndCount()
 
   }
@@ -55,6 +63,7 @@ export class MusicService {
     const music = await this.musicRepository.createQueryBuilder("music")
       .leftJoinAndSelect("music.media", "media")
       .where("music.id = :id", { id })
+      .andWhere("music.isPublished = :isPublished", { isPublished: true })
       .getOne();
     if (!music)
       throw new NotFoundException("Music not found");

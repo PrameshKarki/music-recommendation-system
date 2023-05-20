@@ -1,6 +1,7 @@
-import { Column, Entity, ManyToOne, OneToMany } from "typeorm";
+import { Column, Entity, JoinTable, ManyToMany, ManyToOne, OneToMany } from "typeorm";
 import { Base } from "../../common/entity/base.entity";
 import { Media } from "../../media/entities/media.entity";
+import { Playlist } from "../../playlists/entities/playlist.entity";
 import { User } from "../../user/entity/user.entity";
 
 @Entity()
@@ -57,5 +58,9 @@ export class Music extends Base {
 
     @ManyToOne(() => User, user => user.musics)
     uploadedBy: User
+
+    @ManyToMany(() => Playlist)
+    @JoinTable()
+    playlists: Playlist[]
 
 }

@@ -1,5 +1,5 @@
 import { Body, Controller, Delete, Get, Param, Patch, Post, Query, Request, UseGuards } from '@nestjs/common';
-import { ApiBearerAuth, ApiQuery, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiOperation, ApiQuery, ApiTags } from '@nestjs/swagger';
 import { Request as Req } from 'express';
 import { IFilter } from '../@types/pagination.interface';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
@@ -22,7 +22,8 @@ export class MusicController {
 
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
-  @Post()
+  @ApiOperation({ summary: "Upload a new music into the system, for this user must have CREATOR role" })
+  @Post("/upload")
   async create(@Body() createMusicDto: CreateMusicDto, @Request() req: Req) {
     const user = req.user as User;
     const musicFile = await this.mediaService.findOne(createMusicDto.music, MediaType.MUSIC);
@@ -36,6 +37,7 @@ export class MusicController {
   @ApiQuery({ name: 'page', required: false })
   @ApiQuery({ name: 'perPage', required: false })
   @ApiQuery({ name: 'query', required: false })
+  @ApiOperation({ summary: "Get all musics uploaded by the logged in user" })
   @Get("/own")
   async findOwnMusic(@Query() filter: IFilter, @Request() req: Req) {
     const user = req.user as User;
@@ -43,9 +45,11 @@ export class MusicController {
     const [data, count] = await this.musicService.find(paginationConfig.take, paginationConfig.skip, filter?.query, user);
     return paginatedResponse<Music>(data, count, paginationConfig)
   }
+
   @ApiQuery({ name: 'page', required: false })
   @ApiQuery({ name: 'perPage', required: false })
   @ApiQuery({ name: 'query', required: false })
+  @ApiOperation({ summary: "Get all musics in the server" })
   @Get()
   async find(@Query() filter: IFilter) {
     const paginationConfig = getPaginationConfig(filter);
@@ -54,6 +58,7 @@ export class MusicController {
   }
 
   @Get(':id')
+  @ApiOperation({ summary: "Get a music by id" })
   findOne(@Param('id') id: string) {
     const music = this.musicService.findOne(id);
     return { data: music }

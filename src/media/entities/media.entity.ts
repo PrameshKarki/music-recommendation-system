@@ -1,6 +1,7 @@
-import { Column, Entity, ManyToOne } from "typeorm";
+import { Column, Entity, JoinColumn, ManyToOne, OneToOne } from "typeorm";
 import { Base } from "../../common/entity/base.entity";
 import { Music } from "../../music/entities/music.entity";
+import { Playlist } from "../../playlists/entities/playlist.entity";
 
 export enum MediaType {
     MUSIC = "MUSIC",
@@ -24,6 +25,10 @@ export class Media extends Base {
 
     @ManyToOne(() => Music, (music) => music.media, { onDelete: "CASCADE" })
     music: Music
+
+    @OneToOne(() => Playlist, playlist => playlist.thumbnail)
+    @JoinColumn({ name: "playlist_id" })
+    playlistThumbnail: Playlist
 
     public path: string
 

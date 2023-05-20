@@ -10,6 +10,7 @@ import { MusicService } from './music.service';
     TypeOrmModule.forFeature([Music]),
     MediaModule],
   controllers: [MusicController],
-  providers: [MusicService]
+  providers: [MusicService],
+  exports: [MusicService]
 })
 export class MusicModule { }

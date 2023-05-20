@@ -6,6 +6,7 @@ import { AuthModule } from './auth/auth.module';
 import { MediaModule } from './media/media.module';
 import { MusicModule } from './music/music.module';
 import { UserModule } from './user/user.module';
+import { PlaylistsModule } from './playlists/playlists.module';
 
 @Module({
   imports: [
@@ -28,6 +29,7 @@ import { UserModule } from './user/user.module';
     AuthModule,
     MediaModule,
     MusicModule,
+    PlaylistsModule,
   ],
   controllers: [AppController]
 })

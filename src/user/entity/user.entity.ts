@@ -1,8 +1,9 @@
 import { AfterLoad, BeforeInsert, BeforeUpdate, Column, Entity, OneToMany, OneToOne } from "typeorm";
 import { Base } from "../../common/entity/base.entity";
+import { Music } from "../../music/entities/music.entity";
+import { Playlist } from "../../playlists/entities/playlist.entity";
 import { BcryptService } from '../../utils/bcrypt.service';
 import { Detail } from "./userDetail.entity";
-import { Music } from "../../music/entities/music.entity";
 
 export enum Role {
     CONSUMER = "CONSUMER",
@@ -36,8 +37,11 @@ export class User extends Base {
     @OneToOne(() => Detail, detail => detail.user)
     detail: Detail
 
-    @OneToMany(()=>Music,music=>music.uploadedBy)
-    musics:Music[]
+    @OneToMany(() => Music, music => music.uploadedBy)
+    musics: Music[]
+
+    @OneToMany(() => Music, music => music.playlists)
+    playlists: Playlist[]
 
     private tempPassword!: string;
 
