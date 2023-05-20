@@ -1,4 +1,4 @@
-import { IPagination } from "../@types/pagination.interface";
+import { IFilter } from "../@types/pagination.interface";
 
 export const DEFAULT_PAGE_SIZE = 30;
 export const DEFAULT_PAGE = 1;
@@ -10,9 +10,9 @@ export interface IPaginationConfig {
     take: number;
 }
 
-export const getPaginationConfig = (pagination: IPagination): IPaginationConfig => {
-    const page = pagination.page ? parseInt(pagination.page) : DEFAULT_PAGE;
-    const perPage = pagination.perPage ? parseInt(pagination.perPage) : DEFAULT_PAGE_SIZE;
+export const getPaginationConfig = (filter: IFilter): IPaginationConfig => {
+    const page = filter?.page ? parseInt(filter.page) : DEFAULT_PAGE;
+    const perPage = filter?.perPage ? parseInt(filter.perPage) : DEFAULT_PAGE_SIZE;
     return {
         page,
         perPage,

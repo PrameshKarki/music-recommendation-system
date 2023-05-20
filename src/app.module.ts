@@ -3,6 +3,8 @@ import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AppController } from './app.controller';
 import { AuthModule } from './auth/auth.module';
+import { MediaModule } from './media/media.module';
+import { MusicModule } from './music/music.module';
 import { UserModule } from './user/user.module';
 
 @Module({
@@ -24,6 +26,8 @@ import { UserModule } from './user/user.module';
     }),
     UserModule,
     AuthModule,
+    MediaModule,
+    MusicModule,
   ],
   controllers: [AppController]
 })

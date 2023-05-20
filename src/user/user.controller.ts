@@ -1,7 +1,7 @@
 import { BadRequestException, Controller, Get, Param, Query, Request, UseGuards } from '@nestjs/common';
 import { ApiBearerAuth, ApiQuery, ApiTags } from '@nestjs/swagger';
 import { Request as Req } from 'express';
-import { IPagination } from '../@types/pagination.interface';
+import { IFilter } from '../@types/pagination.interface';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { getPaginationConfig } from '../utils/getPaginationConfig';
 import { paginatedResponse } from '../utils/paginatedResponse';
@@ -39,14 +39,10 @@ export class UserController {
     @ApiQuery({ name: 'page', required: false })
     @ApiQuery({ name: 'perPage', required: false })
     @Get()
-    async find(@Query() pagination: IPagination,) {
-        const paginationConfig = getPaginationConfig(pagination);
+    async find(@Query() filter: IFilter,) {
+        const paginationConfig = getPaginationConfig(filter);
         const [data, count] = await this.userService.find(paginationConfig.take, paginationConfig.skip);
         return paginatedResponse<User>(data, count, paginationConfig)
     }
-
-
-
-
 
 }
