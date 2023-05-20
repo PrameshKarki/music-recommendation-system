@@ -1,14 +1,15 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { AdminController } from './admin/admin.controller';
 import { AppController } from './app.controller';
-import { AuthController } from './auth/auth.controller';
+import { AuthModule } from './auth/auth.module';
 import { UserModule } from './user/user.module';
 
 @Module({
   imports: [
-    ConfigModule.forRoot({}),
+    ConfigModule.forRoot({
+      isGlobal: true,
+    }),
     TypeOrmModule.forRoot({
       retryAttempts: 0,
       type: 'mysql',
@@ -22,7 +23,8 @@ import { UserModule } from './user/user.module';
       dropSchema: false,
     }),
     UserModule,
+    AuthModule,
   ],
-  controllers: [AppController, AuthController, AdminController],
+  controllers: [AppController]
 })
 export class AppModule { }

@@ -1,10 +1,15 @@
-import { BadRequestException, Body, Controller, Get, Param, Post } from '@nestjs/common';
-import { ApiTags } from '@nestjs/swagger';
-import { UserRegisterDTO } from './dto/user.dto';
+import { Controller, Get, Param, Query } from '@nestjs/common';
+import { ApiQuery, ApiTags } from '@nestjs/swagger';
+import { IPagination } from '../@types/pagination.interface';
+import { getPaginationConfig } from '../utils/getPaginationConfig';
+import { paginatedResponse } from '../utils/paginatedResponse';
+import { User } from './entity/user.entity';
 import { UserService } from './user.service';
 
-@ApiTags('User')
-@Controller('user')
+
+
+@ApiTags('Users')
+@Controller('users')
 export class UserController {
 
     constructor(
@@ -18,17 +23,15 @@ export class UserController {
         return await this.userService.findOne(id);
     }
 
-
-    @Post('register')
-    async register(@Body() body: UserRegisterDTO) {
-        // TODO: Refactor this, by implementing a custom validator
-        let user = await this.userService.findOne(body.email)
-        if (user) throw new BadRequestException("User with same email already exists")
-        user = await this.userService.findOne(body.mobileNumber)
-        if (user) throw new BadRequestException("User with same mobile number already exists")
-        return await this.userService.create(body);
-
+    @ApiQuery({ name: 'page', required: false })
+    @ApiQuery({ name: 'perPage', required: false })
+    @Get()
+    async find(@Query() pagination: IPagination,) {
+        const paginationConfig = getPaginationConfig(pagination);
+        const [data, count] = await this.userService.find(paginationConfig.take, paginationConfig.skip);
+        return paginatedResponse<User>(data, count, paginationConfig)
     }
+
 
 
 }

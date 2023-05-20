@@ -1,5 +1,5 @@
 import { Column, Entity, JoinColumn, OneToOne } from "typeorm";
-import { Base } from "../../common/base.entity";
+import { Base } from "../../common/entity/base.entity";
 import { User } from "./user.entity";
 
 export enum Gender {

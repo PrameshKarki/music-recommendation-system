@@ -1,5 +1,5 @@
 import { AfterLoad, BeforeInsert, BeforeUpdate, Column, Entity, OneToOne } from "typeorm";
-import { Base } from "../../common/base.entity";
+import { Base } from "../../common/entity/base.entity";
 import { BcryptService } from '../../utils/bcrypt.service';
 import { Detail } from "./userDetail.entity";
 
