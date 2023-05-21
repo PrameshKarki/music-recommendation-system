@@ -1,5 +1,5 @@
 import { BadRequestException, Controller, Get, Param, Query, Request, UseGuards } from '@nestjs/common';
-import { ApiBearerAuth, ApiQuery, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiOperation, ApiQuery, ApiTags } from '@nestjs/swagger';
 import { Request as Req } from 'express';
 import { IFilter } from '../@types/pagination.interface';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
@@ -11,7 +11,10 @@ import { UserService } from './user.service';
 
 
 @ApiTags('Users')
-@Controller('users')
+@Controller({
+    version: '1',
+    path: 'users'
+})
 export class UserController {
 
     constructor(
@@ -19,6 +22,9 @@ export class UserController {
     ) {
 
     }
+    @ApiOperation({
+        summary: "Get the logged in user's profile",
+    })
     @UseGuards(JwtAuthGuard)
     @ApiBearerAuth()
     @Get("/profile")
@@ -28,6 +34,9 @@ export class UserController {
     }
 
 
+    @ApiOperation({
+        summary: "Get a user's profile (ADMIN)",
+    })
     @Get(':id')
     async findOne(@Param('id') id: string) {
         const user = await this.userService.findOne(id);
@@ -36,6 +45,9 @@ export class UserController {
         return { data: user }
     }
 
+    @ApiOperation({
+        summary: "Get all users (ADMIN)",
+    })
     @ApiQuery({ name: 'page', required: false })
     @ApiQuery({ name: 'perPage', required: false })
     @Get()

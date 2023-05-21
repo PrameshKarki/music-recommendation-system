@@ -1,10 +1,15 @@
 import { Controller, Get } from '@nestjs/common';
-import { ApiResponse, ApiTags } from '@nestjs/swagger';
+import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 
-@Controller()
+@Controller({
+  version: '1',
+})
 export class AppController {
   constructor() { }
 
+  @ApiOperation({
+    summary: 'Ping the server',
+  })
   @ApiTags('Ping')
   @ApiResponse({
     status: 200,
@@ -13,7 +18,6 @@ export class AppController {
   })
   @Get('/ping')
   ping(): object {
-    console.log(process.env);
     return {
       message: 'pong',
     };

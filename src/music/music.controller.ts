@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post, Query, Request, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Post, Query, Request, UseGuards } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiQuery, ApiTags } from '@nestjs/swagger';
 import { Request as Req } from 'express';
 import { IFilter } from '../@types/pagination.interface';
@@ -9,12 +9,15 @@ import { User } from '../user/entity/user.entity';
 import { getPaginationConfig } from '../utils/getPaginationConfig';
 import { paginatedResponse } from '../utils/paginatedResponse';
 import { CreateMusicDto } from './dto/create-music.dto';
-import { UpdateMusicDto } from './dto/update-music.dto';
+import { ToggleLikeMusicDto } from './dto/toggle-like-music.dto';
 import { Music } from './entities/music.entity';
 import { MusicService } from './music.service';
 
 @ApiTags("Music")
-@Controller('music')
+@Controller({
+  version: '1',
+  path: 'music'
+})
 export class MusicController {
   constructor(private readonly musicService: MusicService,
     private readonly mediaService: MediaService
@@ -22,7 +25,7 @@ export class MusicController {
 
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
-  @ApiOperation({ summary: "Upload a new music into the system, for this user must have CREATOR role" })
+  @ApiOperation({ summary: "Upload a new music into the system, for this user must have CREATOR role (USER)" })
   @Post("/upload")
   async create(@Body() createMusicDto: CreateMusicDto, @Request() req: Req) {
     const user = req.user as User;
@@ -37,7 +40,7 @@ export class MusicController {
   @ApiQuery({ name: 'page', required: false })
   @ApiQuery({ name: 'perPage', required: false })
   @ApiQuery({ name: 'query', required: false })
-  @ApiOperation({ summary: "Get all musics uploaded by the logged in user" })
+  @ApiOperation({ summary: "Get all musics uploaded by the logged in user (USER)" })
   @Get("/own")
   async findOwnMusic(@Query() filter: IFilter, @Request() req: Req) {
     const user = req.user as User;
@@ -57,6 +60,21 @@ export class MusicController {
     return paginatedResponse<Music>(data, count, paginationConfig)
   }
 
+  @ApiOperation({ summary: "Get all musics liked by a user" })
+  @Get("/liked")
+  @UseGuards(JwtAuthGuard)
+  @ApiQuery({ name: 'page', required: false })
+  @ApiQuery({ name: 'perPage', required: false })
+  @ApiQuery({ name: 'query', required: false })
+  @ApiBearerAuth()
+  async getLikedMusics(@Query() filter: IFilter, @Request() req: Req) {
+    const user = req.user as User;
+    const paginationConfig = getPaginationConfig(filter);
+    const [musics, total] = await this.musicService.findAllLikedByUser(paginationConfig.take, paginationConfig.skip, user, filter.query);
+    return paginatedResponse<Music>(musics, total, paginationConfig);
+  }
+
+
   @Get(':id')
   @ApiOperation({ summary: "Get a music by id" })
   findOne(@Param('id') id: string) {
@@ -64,15 +82,30 @@ export class MusicController {
     return { data: music }
   }
 
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateMusicDto: UpdateMusicDto) {
-    return this.musicService.update(+id, updateMusicDto);
-  }
 
+  @ApiOperation({
+    summary: "Delete a music by id (USER)"
+  })
+  @UseGuards(JwtAuthGuard)
   @Delete(':id')
   async remove(@Param('id') id: string) {
     let music = await this.musicService.findOne(id);
     music = await this.musicService.remove(music);
     return { data: music }
   }
+
+  @ApiOperation({ summary: "Toggle like status of a music by a user (USER)" })
+  @Post("/toggle-like")
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  async toggleLike(@Body() body: ToggleLikeMusicDto, @Request() req: Req) {
+    const user = req.user as User;
+    const music = await this.musicService.findOne(body.music, ["likedBy"]);
+    await this.musicService.toggleLikeStatusOfMusic(music, user);
+    return {
+      message: "Like status toggled successfully",
+      music
+    }
+  }
+
 }

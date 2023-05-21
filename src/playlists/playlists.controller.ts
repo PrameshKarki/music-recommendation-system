@@ -16,7 +16,10 @@ import { Playlist } from './entities/playlist.entity';
 import { PlaylistsService } from './playlists.service';
 
 @ApiTags("Playlists")
-@Controller('playlists')
+@Controller({
+  version: '1',
+  path: 'playlists'
+})
 export class PlaylistsController {
   constructor(private readonly playlistsService: PlaylistsService
     , private readonly musicService: MusicService,
@@ -25,7 +28,7 @@ export class PlaylistsController {
   ) { }
 
   @ApiOperation({
-    summary: "Create a new playlist",
+    summary: "Create a new playlist (USER)",
   })
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()

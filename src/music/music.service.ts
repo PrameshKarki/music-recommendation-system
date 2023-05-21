@@ -4,7 +4,6 @@ import { Brackets, In, Repository } from 'typeorm';
 import { Media } from '../media/entities/media.entity';
 import { User } from '../user/entity/user.entity';
 import { CreateMusicDto } from './dto/create-music.dto';
-import { UpdateMusicDto } from './dto/update-music.dto';
 import { Music } from './entities/music.entity';
 
 @Injectable()
@@ -59,10 +58,17 @@ export class MusicService {
 
 
 
-  async findOne(id: number | string) {
-    const music = await this.musicRepository.createQueryBuilder("music")
+  async findOne(id: number | string, relations?: string[]) {
+    const query = this.musicRepository.createQueryBuilder("music")
       .leftJoinAndSelect("music.media", "media")
-      .where("music.id = :id", { id })
+
+    if (relations) {
+      relations.forEach(relation => {
+        query.leftJoinAndSelect(`music.${relation}`, relation)
+      }
+      )
+    }
+    const music = await query.where("music.id = :id", { id })
       .andWhere("music.isPublished = :isPublished", { isPublished: true })
       .getOne();
     if (!music)
@@ -71,11 +77,38 @@ export class MusicService {
 
   }
 
-  update(id: number, updateMusicDto: UpdateMusicDto) {
-    return `This action updates a #${id} music`;
-  }
+  async toggleLikeStatusOfMusic(music: Music, user: User) {
+    const isLiked = music?.likedBy.some(user => user.id === user.id)
 
+    if (!isLiked) {
+      music.likedBy.push(user);
+      await this.musicRepository.save(music);
+      return;
+    }
+    else {
+      music.likedBy = music.likedBy.filter(el => el.id !== user.id);
+      await this.musicRepository.save(music);
+      return;
+    }
+  }
   async remove(music: Music) {
     return await this.musicRepository.softRemove(music);
+  }
+
+  async findAllLikedByUser(take: number, skip: number, user: User, searchQuery?: string) {
+    const query = this.musicRepository.createQueryBuilder("music")
+      .leftJoinAndSelect("music.media", "media")
+      .leftJoinAndSelect("music.likedBy", "likedBy")
+      .where("likedBy.id = :userId", { userId: user.id })
+      .take(take)
+      .skip(skip);
+    if (searchQuery) {
+      query.andWhere(new Brackets(qb => {
+        qb.where("music.name LIKE :query")
+          .orWhere("music.album LIKE :query", { query: `%${searchQuery}%` })
+      }))
+    }
+    return query.getManyAndCount();
+
   }
 }

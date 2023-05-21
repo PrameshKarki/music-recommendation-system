@@ -63,4 +63,7 @@ export class Music extends Base {
     @JoinTable()
     playlists: Playlist[]
 
+    @ManyToMany(() => User, user => user.likedPlaylists)
+    likedBy: User[]
+
 }

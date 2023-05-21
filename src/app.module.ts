@@ -5,8 +5,8 @@ import { AppController } from './app.controller';
 import { AuthModule } from './auth/auth.module';
 import { MediaModule } from './media/media.module';
 import { MusicModule } from './music/music.module';
-import { UserModule } from './user/user.module';
 import { PlaylistsModule } from './playlists/playlists.module';
+import { UserModule } from './user/user.module';
 
 @Module({
   imports: [
@@ -23,7 +23,6 @@ import { PlaylistsModule } from './playlists/playlists.module';
       database: 'music_recommendation',
       entities: [__dirname + '/**/**/*.entity{.ts,.js}'],
       synchronize: true,
-      dropSchema: false,
     }),
     UserModule,
     AuthModule,

@@ -1,16 +1,22 @@
 import { Body, Controller, Delete, Get, MaxFileSizeValidator, Param, ParseFilePipe, Post, UploadedFile, UseInterceptors } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { ApiBody, ApiConsumes, ApiTags } from '@nestjs/swagger';
+import { ApiBody, ApiConsumes, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { diskStorage } from 'multer';
 import * as path from 'path';
 import { CreateMediaDto } from './dto/create-media.dto';
 import { MediaService } from './media.service';
 
 @ApiTags('Media')
-@Controller('media')
+@Controller({
+  version: '1',
+  path: 'media'
+})
 export class MediaController {
   constructor(private readonly mediaService: MediaService) { }
 
+  @ApiOperation({
+    summary: "Upload a new media file",
+  })
   @Post('upload')
   @ApiConsumes('multipart/form-data')
   @ApiBody({
@@ -41,6 +47,9 @@ export class MediaController {
     return { data: media }
   }
 
+  @ApiOperation({
+    summary: "Delete a media file",
+  })
   @Delete(":id")
   async deleteMedia(@Param() id: string) {
     const media = await this.mediaService.findOne(id);
@@ -48,6 +57,9 @@ export class MediaController {
     return { data: media }
   }
 
+  @ApiOperation({
+    summary: "Get a media file",
+  })
   @Get(":id")
   async getMedia(@Param() id: string) {
     const media = await this.mediaService.findOne(id);
