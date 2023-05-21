@@ -1,4 +1,4 @@
-import { AfterLoad, BeforeInsert, BeforeUpdate, Column, Entity, OneToMany, OneToOne } from "typeorm";
+import { AfterLoad, BeforeInsert, BeforeUpdate, Column, Entity, JoinTable, ManyToMany, OneToMany, OneToOne } from "typeorm";
 import { Base } from "../../common/entity/base.entity";
 import { Music } from "../../music/entities/music.entity";
 import { Playlist } from "../../playlists/entities/playlist.entity";
@@ -42,6 +42,10 @@ export class User extends Base {
 
     @OneToMany(() => Music, music => music.playlists)
     playlists: Playlist[]
+
+    @ManyToMany(() => Playlist, playlist => playlist.likedBy)
+    @JoinTable()
+    likedPlaylists: Playlist[]
 
     private tempPassword!: string;
 

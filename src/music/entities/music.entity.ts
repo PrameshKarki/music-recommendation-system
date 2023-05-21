@@ -59,7 +59,7 @@ export class Music extends Base {
     @ManyToOne(() => User, user => user.musics)
     uploadedBy: User
 
-    @ManyToMany(() => Playlist)
+    @ManyToMany(() => Playlist, playlist => playlist.musics)
     @JoinTable()
     playlists: Playlist[]
 

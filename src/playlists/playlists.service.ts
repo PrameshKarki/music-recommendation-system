@@ -48,12 +48,19 @@ export class PlaylistsService {
     return query.getManyAndCount();
 
   }
-  async findOne(id: number | string) {
-    const playlist = await this.playlistRepository.createQueryBuilder("playlist")
+  async findOne(id: number | string, relations?: string[]) {
+    const query = this.playlistRepository.createQueryBuilder("playlist")
       .leftJoinAndSelect("playlist.musics", "musics")
       .leftJoinAndSelect("playlist.thumbnail", "thumbnail")
       .leftJoinAndSelect("playlist.createdBy", "createdBy")
-      .where("playlist.id = :id", { id })
+
+    if (relations) {
+      relations.forEach(relation => {
+        query.leftJoinAndSelect(`playlist.${relation}`, relation)
+      }
+      )
+    }
+    const playlist = await query.where("playlist.id = :id", { id })
       .andWhere("playlist.isPrivate = :isPrivate", { isPrivate: false })
       .getOne();
     if (!playlist) {
@@ -68,5 +75,20 @@ export class PlaylistsService {
 
   remove(playlist: Playlist) {
     return this.playlistRepository.softRemove(playlist);
+  }
+
+  async toggleLikeStatusOfPlaylist(playlist: Playlist, user: User) {
+    const isLiked = playlist?.likedBy.some(user => user.id === user.id)
+
+    if (!isLiked) {
+      playlist.likedBy.push(user);
+      await this.playlistRepository.save(playlist);
+      return;
+    }
+    else {
+      playlist.likedBy = playlist.likedBy.filter(el => el.id !== user.id);
+      await this.playlistRepository.save(playlist);
+      return;
+    }
   }
 }

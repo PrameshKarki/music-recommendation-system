@@ -27,6 +27,9 @@ export class Playlist extends Base {
     @ManyToMany(() => Music, (music) => music.playlists)
     musics: Music[]
 
+    @ManyToMany(()=>User,user=>user.likedPlaylists)
+    likedBy:User[]
+
     @ManyToOne(()=>User,user=>user.playlists,{onDelete:"CASCADE"})
     createdBy:User
 }

@@ -2,6 +2,7 @@ import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { MediaModule } from '../media/media.module';
 import { MusicModule } from '../music/music.module';
+import { UserModule } from '../user/user.module';
 import { Playlist } from './entities/playlist.entity';
 import { PlaylistsController } from './playlists.controller';
 import { PlaylistsService } from './playlists.service';
@@ -9,6 +10,6 @@ import { PlaylistsService } from './playlists.service';
 @Module({
   controllers: [PlaylistsController],
   providers: [PlaylistsService],
-  imports: [MediaModule, MusicModule, TypeOrmModule.forFeature([Playlist])]
+  imports: [MediaModule, MusicModule, TypeOrmModule.forFeature([Playlist]), UserModule]
 })
 export class PlaylistsModule { }
