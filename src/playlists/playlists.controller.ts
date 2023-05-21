@@ -62,6 +62,20 @@ export class PlaylistsController {
     return paginatedResponse<Playlist>(data, count, paginationConfig)
   }
 
+  @ApiOperation({ summary: "Get all playlists liked by a user" })
+  @Get("/liked")
+  @UseGuards(JwtAuthGuard)
+  @ApiQuery({ name: 'page', required: false })
+  @ApiQuery({ name: 'perPage', required: false })
+  @ApiQuery({ name: 'query', required: false })
+  @ApiBearerAuth()
+  async getLikedPlaylists(@Query() filter: IFilter, @Request() req: Req) {
+    const user = req.user as User;
+    const paginationConfig = getPaginationConfig(filter);
+    const [playlists, total] = await this.playlistsService.findAllLikedByUser(paginationConfig.take, paginationConfig.skip, user, filter.query);
+    return paginatedResponse<Playlist>(playlists, total, paginationConfig);
+  }
+
   @ApiOperation({ summary: "Get a playlist by id" })
   @Get(':id')
   async findOne(@Param('id') id: string) {
@@ -90,5 +104,7 @@ export class PlaylistsController {
       playlist
     }
   }
+
+
 
 }

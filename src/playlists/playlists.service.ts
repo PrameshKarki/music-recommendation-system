@@ -91,4 +91,23 @@ export class PlaylistsService {
       return;
     }
   }
+
+  async findAllLikedByUser(take: number, skip: number, user: User, searchQuery?: string) {
+    const query = this.playlistRepository.createQueryBuilder("playlist")
+      .leftJoinAndSelect("playlist.musics", "musics")
+      .leftJoinAndSelect("musics.media", "media")
+      .leftJoinAndSelect("playlist.thumbnail", "thumbnail")
+      .leftJoinAndSelect("playlist.likedBy", "likedBy")
+      .where("likedBy.id = :userId", { userId: user.id })
+      .take(take)
+      .skip(skip);
+    if (searchQuery) {
+      query.andWhere(new Brackets(qb => {
+        qb.where("playlist.name LIKE :query")
+          .orWhere("playlist.description LIKE :query", { query: `%${searchQuery}%` })
+      }))
+    }
+    return query.getManyAndCount();
+
+  }
 }
