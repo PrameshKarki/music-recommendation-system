@@ -1,5 +1,5 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post, Query, Request, UseGuards } from '@nestjs/common';
-import { ApiBearerAuth, ApiOperation, ApiQuery, ApiTags } from '@nestjs/swagger';
+import { Body, Controller, Delete, Get, Param, Post, Query, Request, UseGuards } from '@nestjs/common';
+import { ApiBearerAuth, ApiOperation, ApiProperty, ApiQuery, ApiTags } from '@nestjs/swagger';
 import { Request as Req } from 'express';
 import { IFilter } from '../@types/pagination.interface';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
@@ -10,7 +10,6 @@ import { User } from '../user/entity/user.entity';
 import { getPaginationConfig } from '../utils/getPaginationConfig';
 import { paginatedResponse } from '../utils/paginatedResponse';
 import { CreatePlaylistDto } from './dto/create-playlist.dto';
-import { UpdatePlaylistDto } from './dto/update-playlist.dto';
 import { Playlist } from './entities/playlist.entity';
 import { PlaylistsService } from './playlists.service';
 
@@ -22,6 +21,9 @@ export class PlaylistsController {
     private readonly mediaService: MediaService
   ) { }
 
+  @ApiOperation({
+    summary: "Create a new playlist",
+  })
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   @Post("/create")
@@ -57,20 +59,14 @@ export class PlaylistsController {
     return paginatedResponse<Playlist>(data, count, paginationConfig)
   }
 
-
-
-
+  @ApiOperation({ summary: "Get a playlist by id" })
   @Get(':id')
   async findOne(@Param('id') id: string) {
     const playlist = await this.playlistsService.findOne(id);
     return { data: playlist }
   }
 
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updatePlaylistDto: UpdatePlaylistDto) {
-    return this.playlistsService.update(+id, updatePlaylistDto);
-  }
-
+  @ApiProperty({ description: "Remove a playlist by id" })
   @Delete(':id')
   async remove(@Param('id') id: string) {
     let playlist = await this.playlistsService.findOne(id);
