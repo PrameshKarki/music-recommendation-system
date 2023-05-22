@@ -35,7 +35,6 @@ export class AdminsController {
   })
   @Patch()
   async update(@Param('id') id: string, @Body() updateAdminDTO: UpdateAdminDto) {
-    console.log("🚀 ~ file: admins.controller.ts:38 ~ AdminsController ~ update ~ id:", id)
     let admin = await this.adminsService.findOne(id)
     if (!admin) throw new BadRequestException("Admin not found")
     admin = await this.adminsService.update(admin, updateAdminDTO);
