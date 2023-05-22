@@ -51,6 +51,13 @@ export class AuthController {
         return await this.authService.login(req.user as User)
     }
 
+    @UseGuards(LocalAuthGuard)
+    @Post('admin/login')
+    async adminLoin(@Body() body: LoginDTO, @Req() req: Request) {
+        console.log(req.user)
+        return { pass: true }
+    }
+
     @ApiOperation({
         summary: "Change the password of logged in user",
 

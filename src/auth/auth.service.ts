@@ -1,6 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { IJWTPayload } from '../@types/jwt.interface';
+import { AdminsService } from '../admins/admins.service';
+import { Admin } from '../admins/entities/admin.entity';
 import { User } from '../user/entity/user.entity';
 import { UserService } from '../user/user.service';
 import { BcryptService } from '../utils/bcrypt.service';
@@ -10,15 +12,19 @@ export class AuthService {
     bcryptService: BcryptService
 
     constructor(private readonly userService: UserService,
-        private readonly jwtService: JwtService
+        private readonly jwtService: JwtService,
+        private readonly adminService: AdminsService
     ) {
         this.bcryptService = new BcryptService()
     }
 
     async validateUser(username: string, password: string) {
-        const user = await this.userService.findOne(username, true);
+        let user: User | Admin | null = await this.userService.findOne(username, true);
         if (!user) {
-            return null;
+            // TODO: Refactor this logic
+            user = await this.adminService.findOne(username, true);
+            if (!user)
+                return null;
         }
         const isValidPassword = await this.bcryptService.compare(password, user.password)
         if (isValidPassword) {
@@ -27,7 +33,6 @@ export class AuthService {
         }
         return null;
     }
-
 
     async login(user: User) {
         const payload: IJWTPayload = { id: user.id, role: user.role };

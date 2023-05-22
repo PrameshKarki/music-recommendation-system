@@ -1,6 +1,7 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { AdminsModule } from './admins/admins.module';
 import { AppController } from './app.controller';
 import { AuthModule } from './auth/auth.module';
 import { MediaModule } from './media/media.module';
@@ -23,12 +24,15 @@ import { UserModule } from './user/user.module';
       database: 'music_recommendation',
       entities: [__dirname + '/**/**/*.entity{.ts,.js}'],
       synchronize: true,
+      // logging: true,
+      // dropSchema: true
     }),
     UserModule,
     AuthModule,
     MediaModule,
     MusicModule,
     PlaylistsModule,
+    AdminsModule,
   ],
   controllers: [AppController]
 })
