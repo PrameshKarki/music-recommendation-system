@@ -8,9 +8,14 @@ import { MediaModule } from './media/media.module';
 import { MusicModule } from './music/music.module';
 import { PlaylistsModule } from './playlists/playlists.module';
 import { UserModule } from './user/user.module';
+import { ServeStaticModule } from '@nestjs/serve-static';
+import * as path from 'path';
 
 @Module({
   imports: [
+    ServeStaticModule.forRoot({
+      rootPath: path.join(__dirname, '...', 'public', 'uploads'),
+    }),
     ConfigModule.forRoot({
       isGlobal: true,
     }),
@@ -34,6 +39,6 @@ import { UserModule } from './user/user.module';
     PlaylistsModule,
     AdminsModule,
   ],
-  controllers: [AppController]
+  controllers: [AppController],
 })
-export class AppModule { }
+export class AppModule {}

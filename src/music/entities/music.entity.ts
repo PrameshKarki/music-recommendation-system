@@ -1,4 +1,4 @@
-import { Column, Entity, JoinTable, ManyToMany, ManyToOne, OneToMany } from "typeorm";
+import { AfterLoad, Column, Entity, JoinTable, ManyToMany, ManyToOne, OneToMany } from "typeorm";
 import { Base } from "../../common/entity/base.entity";
 import { Media } from "../../media/entities/media.entity";
 import { Playlist } from "../../playlists/entities/playlist.entity";
