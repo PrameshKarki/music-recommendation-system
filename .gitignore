@@ -35,3 +35,6 @@ lerna-debug.log*
 !.vscode/extensions.json
 
 .env
+pnpm-lock.yaml
+public
+yarn.lock
