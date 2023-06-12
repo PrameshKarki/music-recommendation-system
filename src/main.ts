@@ -8,6 +8,7 @@ import * as path from 'path';
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   app.use(express.static(path.join(__dirname, '..', 'public', 'uploads')));
+  app.enableCors()
   app.enableVersioning({
     type: VersioningType.URI,
   });
