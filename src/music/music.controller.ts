@@ -1,6 +1,7 @@
 import { Body, Controller, Delete, Get, Param, Post, Query, Request, UseGuards } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiQuery, ApiTags } from '@nestjs/swagger';
 import { Request as Req } from 'express';
+import { IMusicFilter, Mood } from '../@types/global.types';
 import { IFilter } from '../@types/pagination.interface';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { MediaType } from '../media/entities/media.entity';
@@ -52,11 +53,12 @@ export class MusicController {
   @ApiQuery({ name: 'page', required: false })
   @ApiQuery({ name: 'perPage', required: false })
   @ApiQuery({ name: 'query', required: false })
+  @ApiQuery({ name: 'type', required: false, enum: Mood })
   @ApiOperation({ summary: "Get all musics in the server" })
   @Get()
-  async find(@Query() filter: IFilter) {
+  async find(@Query() filter: IMusicFilter) {
     const paginationConfig = getPaginationConfig(filter);
-    const [data, count] = await this.musicService.find(paginationConfig.take, paginationConfig.skip, filter?.query);
+    const [data, count] = await this.musicService.find(paginationConfig.take, paginationConfig.skip, filter?.query, undefined, filter?.type);
     return paginatedResponse<Music>(data, count, paginationConfig)
   }
 

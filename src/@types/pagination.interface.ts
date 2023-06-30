@@ -3,4 +3,3 @@ export interface IFilter {
     perPage?: string;
     query?: string;
 }
-

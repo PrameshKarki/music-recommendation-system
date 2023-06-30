@@ -1,6 +1,8 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
+import { ServeStaticModule } from '@nestjs/serve-static';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import * as path from 'path';
 import { AdminsModule } from './admins/admins.module';
 import { AppController } from './app.controller';
 import { AuthModule } from './auth/auth.module';
@@ -8,8 +10,6 @@ import { MediaModule } from './media/media.module';
 import { MusicModule } from './music/music.module';
 import { PlaylistsModule } from './playlists/playlists.module';
 import { UserModule } from './user/user.module';
-import { ServeStaticModule } from '@nestjs/serve-static';
-import * as path from 'path';
 
 @Module({
   imports: [
@@ -29,7 +29,6 @@ import * as path from 'path';
       database: 'music_recommendation',
       entities: [__dirname + '/**/**/*.entity{.ts,.js}'],
       synchronize: true,
-      // logging: true,
       // dropSchema: true
     }),
     UserModule,
@@ -41,4 +40,4 @@ import * as path from 'path';
   ],
   controllers: [AppController],
 })
-export class AppModule {}
+export class AppModule { }

@@ -1,6 +1,7 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Brackets, In, Repository } from 'typeorm';
+import { Mood } from '../@types/global.types';
 import { Media } from '../media/entities/media.entity';
 import { User } from '../user/entity/user.entity';
 import { CreateMusicDto } from './dto/create-music.dto';
@@ -30,7 +31,8 @@ export class MusicService {
     });
   }
 
-  async find(take: number, skip: number, searchQuery?: string, user?: User) {
+  async find(take: number, skip: number, searchQuery?: string, user?: User, type?: Mood) {
+    console.log("🚀 ~ file: music.service.ts:35 ~ MusicService ~ find ~ type:", type)
     const query = this.musicRepository.createQueryBuilder("music")
       .leftJoinAndSelect("music.media", "media")
       .take(take)
@@ -44,13 +46,13 @@ export class MusicService {
 
       }))
     }
-
     if (user) {
       query.leftJoinAndSelect("music.uploadedBy", "uploadedBy")
       query.andWhere("uploadedBy.id = :user", { user: user.id })
     }
-
     query.andWhere("music.isPublished = :isPublished", { isPublished: true })
+    if (type)
+      query.andWhere("music.type = :type", { type })
 
     return await query.getManyAndCount()
 

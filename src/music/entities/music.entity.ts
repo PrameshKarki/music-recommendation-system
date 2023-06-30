@@ -1,4 +1,5 @@
-import { AfterLoad, Column, Entity, JoinTable, ManyToMany, ManyToOne, OneToMany } from "typeorm";
+import { Column, Entity, JoinTable, ManyToMany, ManyToOne, OneToMany } from "typeorm";
+import { Mood } from "../../@types/global.types";
 import { Base } from "../../common/entity/base.entity";
 import { Media } from "../../media/entities/media.entity";
 import { Playlist } from "../../playlists/entities/playlist.entity";
@@ -19,6 +20,12 @@ export class Music extends Base {
         type: "json"
     })
     singer: string[];
+
+    @Column({
+        type: "enum",
+        enum: Mood
+    })
+    type: Mood
 
     @Column({
         type: "json"

@@ -1,6 +1,7 @@
 import { ApiProperty } from "@nestjs/swagger";
 import { Transform } from "class-transformer";
-import { IsArray, IsBoolean, IsNotEmpty, IsNumber, IsOptional, IsString } from "class-validator";
+import { IsArray, IsBoolean, IsEnum, IsNotEmpty, IsNumber, IsOptional, IsString } from "class-validator";
+import { Mood } from "../../@types/global.types";
 
 export class CreateMusicDto {
     @ApiProperty({
@@ -33,6 +34,15 @@ export class CreateMusicDto {
     @IsString({ each: true })
     @IsArray()
     singer: string[];
+
+    @ApiProperty({
+        enum: Mood,
+        type: "enum",
+        example: Mood.HAPPY
+    })
+    @IsNotEmpty()
+    @IsEnum(Mood)
+    type: Mood
 
     @ApiProperty({
         isArray: true,
