@@ -1,5 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { isEnum } from 'class-validator';
 import { Brackets, In, Repository } from 'typeorm';
 import { Mood } from '../@types/global.types';
 import { Media } from '../media/entities/media.entity';
@@ -51,8 +52,12 @@ export class MusicService {
       query.andWhere("uploadedBy.id = :user", { user: user.id })
     }
     query.andWhere("music.isPublished = :isPublished", { isPublished: true })
-    if (type)
-      query.andWhere("music.type = :type", { type })
+    if (type) {
+      if (isEnum(type, Mood))
+        query.andWhere("music.type = :type", { type })
+      else
+        throw new NotFoundException("Invalid mood type")
+    }
 
     return await query.getManyAndCount()
 
