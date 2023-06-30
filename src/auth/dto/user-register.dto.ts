@@ -27,7 +27,7 @@ export class UserDetailDTO {
     })
     @IsNotEmpty()
     @IsDateString()
-    dateOfBirth: string;
+    dateOfBirth?: string;
 
     @ApiProperty({
         enum: Gender,
@@ -36,7 +36,7 @@ export class UserDetailDTO {
     })
     @IsNotEmpty()
     @IsEnum(Gender)
-    gender: Gender
+    gender?: Gender
 }
 
 
@@ -53,7 +53,7 @@ export class UserRegisterDTO {
     })
     @IsNotEmpty()
     @IsString()
-    mobileNumber: string;
+    mobileNumber?: string;
 
     @ApiProperty({
         example: "John@123@"
@@ -61,7 +61,7 @@ export class UserRegisterDTO {
     @IsNotEmpty()
     @IsString()
     @IsStrongPassword()
-    password: string;
+    password?: string;
 
     @ApiProperty()
     @IsDefined()

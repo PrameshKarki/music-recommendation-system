@@ -1,4 +1,4 @@
-import { BadRequestException, Body, Controller, InternalServerErrorException, Post, Req, UseGuards } from '@nestjs/common';
+import { BadRequestException, Body, Controller, Get, InternalServerErrorException, Post, Req, UseGuards } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { Request } from 'express';
 import { User } from '../user/entity/user.entity';
@@ -8,6 +8,7 @@ import { AuthService } from './auth.service';
 import { ChangePasswordDTO } from './dto/change-password.dto';
 import { LoginDTO } from './dto/login.dto';
 import { UserRegisterDTO } from './dto/user-register.dto';
+import { GoogleAuthGuard } from './gogle-auth.guard';
 import { JwtAuthGuard } from './jwt-auth.guard';
 import { LocalAuthGuard } from './local-auth.guard';
 
@@ -35,7 +36,7 @@ export class AuthController {
         // TODO: Refactor this, by implementing a custom validator
         let user = await this.userService.findOne(body.email)
         if (user) throw new BadRequestException("User already exists")
-        user = await this.userService.findOne(body.mobileNumber)
+        user = await this.userService.findOne(body.mobileNumber!)
         if (user) throw new BadRequestException("User already exists")
         user = await this.userService.create(body);
         return this.authService.login(user)
@@ -70,7 +71,7 @@ export class AuthController {
         user = await this.userService.findOne(user.id, true)
         if (!user)
             throw new InternalServerErrorException("Internal sever error")
-        const isValidOldPassword = await this.bcryptService.compare(body.oldPassword, user.password)
+        const isValidOldPassword = await this.bcryptService.compare(body.oldPassword, user.password!)
         if (!isValidOldPassword)
             throw new BadRequestException("Invalid old password")
         user.password = body.newPassword;
@@ -78,5 +79,15 @@ export class AuthController {
         const { password, tempPassword, ...rest } = await user.save()
         return { message: "Password has changed successfully", data: rest };
 
+    }
+
+    @Get("/google/login")
+    @UseGuards(GoogleAuthGuard)
+    async googleAuth(@Req() req: Request) { }
+
+    @Get('google/redirect')
+    @UseGuards(GoogleAuthGuard)
+    googleAuthRedirect(@Req() req: Request) {
+        return this.authService.loginWithGoogle(req.user)
     }
 }

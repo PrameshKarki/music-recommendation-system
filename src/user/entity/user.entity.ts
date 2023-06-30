@@ -10,22 +10,28 @@ export enum Role {
     CREATOR = "CREATOR",
 }
 
+export enum Provider {
+    GOOGLE = "GOOGLE",
+    WEB = "WEB"
+}
+
 @Entity()
 export class User extends Base {
     @Column({
-        unique: true
     })
     email: string
 
     @Column({
-        select: false
+        select: false,
+        nullable: true
     })
-    password: string
+    password?: string
 
     @Column({
-        unique: true
+        unique: true,
+        nullable: true
     })
-    mobileNumber: string
+    mobileNumber?: string
 
     @Column({
         type: "enum",
@@ -33,6 +39,13 @@ export class User extends Base {
         default: Role.CONSUMER
     })
     role: Role
+
+    @Column({
+        type: "enum",
+        enum: Provider,
+        default: Provider.WEB
+    })
+    provider: Provider
 
     @OneToOne(() => Detail, detail => detail.user)
     detail: Detail
@@ -55,12 +68,13 @@ export class User extends Base {
 
     @AfterLoad()
     private loadPassword() {
-        this.tempPassword = this.password;
+        if (this.password)
+            this.tempPassword = this.password;
     }
     @BeforeInsert()
     @BeforeUpdate()
     async hashPassword() {
-        if (this.password !== this.tempPassword) {
+        if (this.password && this.password !== this.tempPassword) {
             this.password = await new BcryptService().hash(this.password);
         }
     }

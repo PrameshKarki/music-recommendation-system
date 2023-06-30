@@ -20,11 +20,15 @@ export class Detail extends Base {
     @Column()
     lastName: string;
 
-    @Column()
-    dateOfBirth: Date;
+    @Column({
+        nullable: true,
+    })
+    dateOfBirth?: Date;
 
-    @Column()
-    gender: Gender
+    @Column({
+        nullable: true
+    })
+    gender?: Gender
 
     @OneToOne(() => User, user => user.detail, { onDelete: "CASCADE" })
     @JoinColumn({

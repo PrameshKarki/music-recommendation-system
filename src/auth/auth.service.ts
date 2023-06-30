@@ -3,7 +3,7 @@ import { JwtService } from '@nestjs/jwt';
 import { IJWTPayload } from '../@types/jwt.interface';
 import { AdminsService } from '../admins/admins.service';
 import { Admin } from '../admins/entities/admin.entity';
-import { User } from '../user/entity/user.entity';
+import { Provider, User } from '../user/entity/user.entity';
 import { UserService } from '../user/user.service';
 import { BcryptService } from '../utils/bcrypt.service';
 
@@ -26,12 +26,30 @@ export class AuthService {
             if (!user)
                 return null;
         }
-        const isValidPassword = await this.bcryptService.compare(password, user.password)
+        const isValidPassword = await this.bcryptService.compare(password, user.password!)
         if (isValidPassword) {
             const { password, ...result } = user;
             return result;
         }
         return null;
+    }
+
+    async loginWithGoogle(user: any) {
+        await this.userService.create({
+            email: user.email,
+            detail: {
+                firstName: user.firstName,
+                lastName: user.lastName
+            }
+        }, Provider.GOOGLE)
+        return {
+            data: {
+                email: user.email,
+            },
+            tokens: {
+                accessToken: user.accessToken,
+            }
+        }
     }
 
     async login(user: User) {
