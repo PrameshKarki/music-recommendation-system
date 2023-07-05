@@ -10,6 +10,7 @@ import { User } from '../user/entity/user.entity';
 import { UserService } from '../user/user.service';
 import { getPaginationConfig } from '../utils/getPaginationConfig';
 import { paginatedResponse } from '../utils/paginatedResponse';
+import { AddMusicInAPlaylistDTO } from './dto/add-music.dto';
 import { CreatePlaylistDto } from './dto/create-playlist.dto';
 import { ToggleLikePlaylistDto } from './dto/toggle-like-playlist.dto';
 import { Playlist } from './entities/playlist.entity';
@@ -38,6 +39,27 @@ export class PlaylistsController {
     const thumbnail = await this.mediaService.findOne(createPlaylistDto.thumbnail, MediaType.THUMBNAIL);
     const musics = await this.musicService.findAllByIds(createPlaylistDto.musics);
     return this.playlistsService.create(createPlaylistDto, thumbnail, musics, user);
+  }
+  @ApiOperation({
+    summary: "Add a new music in a playlist. If it already exist in a playlist it simply removes (USER)",
+  })
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @Post("/add-music")
+  async addMusic(@Body() addMusicInAPlaylistDTO: AddMusicInAPlaylistDTO, @Request() req: Req) {
+    const user = req.user as User;
+    const playlist = await this.playlistsService.findOne(addMusicInAPlaylistDTO.playlist);
+    const music = await this.musicService.findOne(addMusicInAPlaylistDTO.music);
+    if (playlist.musics.includes(music)) {
+      // * Simply remove from playlist
+      playlist.musics = playlist.musics.filter(el => el.id !== music.id)
+      await playlist.save()
+      return "Successfully removed from a playlist."
+    } else {
+      playlist.musics = [...playlist.musics, music]
+      await playlist.save()
+      return "Successfully added in a playlist."
+    }
   }
 
   @ApiQuery({ name: 'page', required: false })

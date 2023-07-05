@@ -33,7 +33,6 @@ export class MusicService {
   }
 
   async find(take: number, skip: number, searchQuery?: string, user?: User, type?: Mood) {
-    console.log("🚀 ~ file: music.service.ts:35 ~ MusicService ~ find ~ type:", type)
     const query = this.musicRepository.createQueryBuilder("music")
       .leftJoinAndSelect("music.media", "media")
       .take(take)
