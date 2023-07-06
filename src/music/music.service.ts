@@ -102,6 +102,7 @@ export class MusicService {
   }
 
   async findAllLikedByUser(take: number, skip: number, user: User, searchQuery?: string) {
+    console.log("🚀 ~ file: music.service.ts:105 ~ MusicService ~ findAllLikedByUser ~ searchQuery:", searchQuery)
     const query = this.musicRepository.createQueryBuilder("music")
       .leftJoinAndSelect("music.media", "media")
       .leftJoinAndSelect("music.likedBy", "likedBy")

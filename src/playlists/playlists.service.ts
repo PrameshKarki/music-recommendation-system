@@ -42,7 +42,7 @@ export class PlaylistsService {
     if (!user)
       query.andWhere("playlist.isPrivate = :isPrivate", { isPrivate: false })
     else
-      query.leftJoinAndSelect("playlist.createdBy", "createdBy")
+      query
         .andWhere("createdBy.id = :userId", { userId: user.id })
 
     return query.getManyAndCount();
