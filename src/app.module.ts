@@ -26,7 +26,7 @@ import { UserModule } from './user/user.module';
       port: +!process.env.DATABASE_PORT,
       username: process.env.DATABASE_USERNAME,
       password: process.env.DATABASE_PASSWORD,
-      database: 'music_recommendation',
+      database: process.env.DATABASE_NAME,
       entities: [__dirname + '/**/**/*.entity{.ts,.js}'],
       synchronize: true,
       // dropSchema: true
@@ -40,4 +40,4 @@ import { UserModule } from './user/user.module';
   ],
   controllers: [AppController],
 })
-export class AppModule {}
+export class AppModule { }

@@ -82,7 +82,6 @@ export class MusicService {
       .where('music.id = :id', { id })
       .andWhere('music.isPublished = :isPublished', { isPublished: true })
       .getOne();
-    console.log(music);
     if (!music) {
       throw new NotFoundException('Music not found');
     }
