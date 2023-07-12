@@ -13,7 +13,7 @@ export class MusicService {
   constructor(
     @InjectRepository(Music)
     private musicRepository: Repository<Music>,
-  ) {}
+  ) { }
 
   create(body: CreateMusicDto, musicFile: Media, thumbnail: Media, user: User) {
     return this.musicRepository
@@ -82,9 +82,11 @@ export class MusicService {
       .where('music.id = :id', { id })
       .andWhere('music.isPublished = :isPublished', { isPublished: true })
       .getOne();
+    console.log(music);
     if (!music) {
+      throw new NotFoundException('Music not found');
     }
-    throw new NotFoundException('Music not found');
+    return music;
   }
 
   async toggleLikeStatusOfMusic(music: Music, user: User) {

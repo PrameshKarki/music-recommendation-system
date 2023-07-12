@@ -79,8 +79,8 @@ export class MusicController {
 
   @Get(':id')
   @ApiOperation({ summary: "Get a music by id" })
-  findOne(@Param('id') id: string) {
-    const music = this.musicService.findOne(id);
+  async findOne(@Param('id') id: string) {
+    const music = await this.musicService.findOne(id);
     return { data: music }
   }
 
