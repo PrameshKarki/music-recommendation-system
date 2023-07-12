@@ -81,7 +81,16 @@ export class MusicController {
   @ApiOperation({ summary: "Get a music by id" })
   async findOne(@Param('id') id: string) {
     const music = await this.musicService.findOne(id);
-    return { data: music }
+    const musicFile = music.media.find(media => media.type === MediaType.MUSIC);
+    const thumbnail = music.media.find(media => media.type === MediaType.THUMBNAIL);
+    const { media, ...rest } = music;
+    return {
+      data: {
+        ...rest,
+        music: musicFile,
+        thumbnail
+      }
+    }
   }
 
 
