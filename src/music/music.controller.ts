@@ -100,7 +100,7 @@ export class MusicController {
   @UseGuards(JwtAuthGuard)
   @Delete(':id')
   async remove(@Param('id') id: string) {
-    let music = await this.musicService.findOne(id);
+    let music = await this.musicService.findOne(id,undefined,);
     music = await this.musicService.remove(music);
     return { data: music }
   }

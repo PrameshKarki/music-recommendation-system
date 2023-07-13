@@ -110,10 +110,13 @@ export class PlaylistsController {
 
   @Delete(':id')
   @ApiOperation({ summary: "Remove a playlist by id" })
-  async remove(@Param('id') id: string) {
-    let playlist = await this.playlistsService.findOne(id);
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  async remove(@Param('id') id: string, @Request() req: Req) {
+    const user = req.user as User;
+    let playlist = await this.playlistsService.findOne(id, undefined, user);
     playlist = await this.playlistsService.remove(playlist);
-    return { data: playlist }
+    return { message: "Playlist deleted successfully.", data: playlist }
   }
 
   @ApiOperation({ summary: "Toggle like status of a playlist by a user" })
