@@ -112,10 +112,17 @@ export class MusicController {
   async toggleLike(@Body() body: ToggleLikeMusicDto, @Request() req: Req) {
     const user = req.user as User;
     const music = await this.musicService.findOne(body.music, ["likedBy"]);
-    await this.musicService.toggleLikeStatusOfMusic(music, user);
-    return {
-      message: "Like status toggled successfully",
-      music
+    const isLiked = await this.musicService.toggleLikeStatusOfMusic(music, user);
+    if (isLiked) {
+      return {
+        message: "Music is liked successfully",
+        music
+      }
+    } else {
+      return {
+        message: "Music is disliked successfully",
+        music
+      }
     }
   }
 

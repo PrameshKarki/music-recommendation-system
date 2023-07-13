@@ -90,15 +90,14 @@ export class MusicService {
 
   async toggleLikeStatusOfMusic(music: Music, user: User) {
     const isLiked = music?.likedBy.some((user) => user.id === user.id);
-
     if (!isLiked) {
       music.likedBy.push(user);
       await this.musicRepository.save(music);
-      return;
+      return true;
     } else {
       music.likedBy = music.likedBy.filter((el) => el.id !== user.id);
       await this.musicRepository.save(music);
-      return;
+      return false;
     }
   }
   async remove(music: Music) {
