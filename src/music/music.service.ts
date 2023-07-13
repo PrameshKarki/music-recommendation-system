@@ -89,9 +89,9 @@ export class MusicService {
   }
 
   async toggleLikeStatusOfMusic(music: Music, user: User) {
-    const isLiked = music?.likedBy.some((user) => user.id === user.id);
+    const isLiked = music?.likedBy.find((user) => user.id === user.id);
     if (!isLiked) {
-      music.likedBy.push(user);
+      music.likedBy = [...music.likedBy, user];
       await this.musicRepository.save(music);
       return true;
     } else {
@@ -110,10 +110,7 @@ export class MusicService {
     user: User,
     searchQuery?: string,
   ) {
-    console.log(
-      '🚀 ~ file: music.service.ts:105 ~ MusicService ~ findAllLikedByUser ~ searchQuery:',
-      searchQuery,
-    );
+
     const query = this.musicRepository
       .createQueryBuilder('music')
       .leftJoinAndSelect('music.media', 'media')
