@@ -88,6 +88,16 @@ export class MusicService {
     return music;
   }
 
+  async findSimilarMusic(type: Mood, excludedIds: string[]) {
+    return await this.musicRepository.createQueryBuilder('music')
+      .leftJoinAndSelect('music.media', 'media')
+      .where('music.type = :type', { type })
+      .andWhere('music.id NOT IN (:...excludedIds)', { excludedIds })
+      .andWhere('music.isPublished = :isPublished', { isPublished: true })
+      .getOne();
+
+  }
+
   async toggleLikeStatusOfMusic(music: Music, user: User) {
     const isLiked = music?.likedBy.find((user) => user.id === user.id);
     if (!isLiked) {

@@ -93,6 +93,17 @@ export class MusicController {
     }
   }
 
+  @Get('/similar/:id')
+  @ApiOperation({ summary: "Get similar music by id" })
+  async findSimilarMusic(@Param('id') id: string) {
+    const music = await this.musicService.findOne(id);
+    const type = music.type;
+    const similarMusic = await this.musicService.findSimilarMusic(type, [music.id]);
+    return {
+      data: similarMusic
+    }
+  }
+
 
   @ApiOperation({
     summary: "Delete a music by id (USER)"
@@ -100,7 +111,7 @@ export class MusicController {
   @UseGuards(JwtAuthGuard)
   @Delete(':id')
   async remove(@Param('id') id: string) {
-    let music = await this.musicService.findOne(id,undefined,);
+    let music = await this.musicService.findOne(id, undefined,);
     music = await this.musicService.remove(music);
     return { data: music }
   }
