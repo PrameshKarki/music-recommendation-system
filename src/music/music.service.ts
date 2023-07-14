@@ -89,17 +89,26 @@ export class MusicService {
     return music;
   }
 
-  async toggleLikeStatusOfMusic(music: Music, user: User) {
-    const isLiked = music?.likedBy.some((user) => user.id === user.id);
+  async findSimilarMusic(type: Mood, excludedIds: string[]) {
+    return await this.musicRepository.createQueryBuilder('music')
+      .leftJoinAndSelect('music.media', 'media')
+      .where('music.type = :type', { type })
+      .andWhere('music.id NOT IN (:...excludedIds)', { excludedIds })
+      .andWhere('music.isPublished = :isPublished', { isPublished: true })
+      .getOne();
 
+  }
+
+  async toggleLikeStatusOfMusic(music: Music, user: User) {
+    const isLiked = music?.likedBy.find((user) => user.id === user.id);
     if (!isLiked) {
-      music.likedBy.push(user);
+      music.likedBy = [...music.likedBy, user];
       await this.musicRepository.save(music);
-      return;
+      return true;
     } else {
       music.likedBy = music.likedBy.filter((el) => el.id !== user.id);
       await this.musicRepository.save(music);
-      return;
+      return false;
     }
   }
   async remove(music: Music) {
@@ -112,10 +121,7 @@ export class MusicService {
     user: User,
     searchQuery?: string,
   ) {
-    console.log(
-      '🚀 ~ file: music.service.ts:105 ~ MusicService ~ findAllLikedByUser ~ searchQuery:',
-      searchQuery,
-    );
+
     const query = this.musicRepository
       .createQueryBuilder('music')
       .leftJoinAndSelect('music.media', 'media')

@@ -56,22 +56,22 @@ export class PlaylistsService {
 
     return query.getManyAndCount();
   }
-  async findOne(id: number | string, relations?: string[]) {
-    const query = this.playlistRepository
-      .createQueryBuilder('playlist')
-      .leftJoinAndSelect('playlist.musics', 'musics')
-      .leftJoinAndSelect('playlist.thumbnail', 'thumbnail')
-      .leftJoinAndSelect('playlist.createdBy', 'createdBy');
+  async findOne(id: number | string, relations?: string[], user?: User) {
+    const query = this.playlistRepository.createQueryBuilder("playlist")
+      .leftJoinAndSelect("playlist.musics", "musics")
+      .leftJoinAndSelect("playlist.thumbnail", "thumbnail")
+      .leftJoinAndSelect("playlist.createdBy", "createdBy")
 
     if (relations) {
       relations.forEach((relation) => {
         query.leftJoinAndSelect(`playlist.${relation}`, relation);
       });
     }
-    const playlist = await query
-      .where('playlist.id = :id', { id })
-      .andWhere('playlist.isPrivate = :isPrivate', { isPrivate: false })
+    const playlist = await query.where("playlist.id = :id", { id })
+      .andWhere("createdBy.id = :creatorID", { creatorID: user?.id })
       .getOne();
+
+
     if (!playlist) {
       throw new NotFoundException('Playlist not found');
     }

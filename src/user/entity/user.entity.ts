@@ -61,7 +61,6 @@ export class User extends Base {
     likedPlaylists: Playlist[]
 
     @ManyToMany(() => Music, music => music.likedBy)
-    @JoinTable()
     likedMusics: Music[]
 
     private tempPassword!: string;

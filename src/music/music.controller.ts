@@ -145,6 +145,18 @@ export class MusicController {
     };
   }
 
+  @Get('/similar/:id')
+  @ApiOperation({ summary: "Get similar music by id" })
+  async findSimilarMusic(@Param('id') id: string) {
+    const music = await this.musicService.findOne(id);
+    const type = music.type;
+    const similarMusic = await this.musicService.findSimilarMusic(type, [music.id]);
+    return {
+      data: similarMusic
+    }
+  }
+
+
   @ApiOperation({
     summary: 'Delete a music by id (USER)',
   })
@@ -168,11 +180,18 @@ export class MusicController {
   @ApiBearerAuth()
   async toggleLike(@Body() body: ToggleLikeMusicDto, @Request() req: Req) {
     const user = req.user as User;
-    const music = await this.musicService.findOne(body.music, ['likedBy']);
-    await this.musicService.toggleLikeStatusOfMusic(music, user);
-    return {
-      message: 'Like status toggled successfully',
-      music,
-    };
+    const music = await this.musicService.findOne(body.music, ["likedBy"]);
+    const isLiked = await this.musicService.toggleLikeStatusOfMusic(music, user);
+    if (isLiked) {
+      return {
+        message: "Music is liked successfully",
+        music
+      }
+    } else {
+      return {
+        message: "Music is disliked successfully",
+        music
+      }
+    }
   }
 }
