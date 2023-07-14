@@ -3,6 +3,7 @@ import { Base } from "../../common/entity/base.entity";
 import { Music } from "../../music/entities/music.entity";
 import { Playlist } from "../../playlists/entities/playlist.entity";
 import { BcryptService } from '../../utils/bcrypt.service';
+import { OTP } from "./otp.entity";
 import { Detail } from "./userDetail.entity";
 
 export enum Role {
@@ -62,6 +63,9 @@ export class User extends Base {
 
     @ManyToMany(() => Music, music => music.likedBy)
     likedMusics: Music[]
+
+    @OneToOne(() => OTP, otp => otp.user, { nullable: true })
+    otp?: OTP
 
     private tempPassword!: string;
 

@@ -1,8 +1,11 @@
 import { Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
 import { IJWTPayload } from '../@types/jwt.interface';
 import { AdminsService } from '../admins/admins.service';
 import { Admin } from '../admins/entities/admin.entity';
+import { OTP } from '../user/entity/otp.entity';
 import { Provider, User } from '../user/entity/user.entity';
 import { UserService } from '../user/user.service';
 import { BcryptService } from '../utils/bcrypt.service';
@@ -11,7 +14,10 @@ import { BcryptService } from '../utils/bcrypt.service';
 export class AuthService {
     bcryptService: BcryptService
 
-    constructor(private readonly userService: UserService,
+    constructor(
+        @InjectRepository(OTP)
+        private otpRepository: Repository<OTP>,
+        private readonly userService: UserService,
         private readonly jwtService: JwtService,
         private readonly adminService: AdminsService
     ) {
@@ -32,6 +38,16 @@ export class AuthService {
             return result;
         }
         return null;
+    }
+
+    async createOTP(user: User) {
+        // * Generate random number of 5 digits
+        const number = Math.floor(10000 + Math.random() * 90000);
+        // * Save the number in the database
+        await this.otpRepository.create({
+            user,
+            number
+        }).save()
     }
 
     async loginWithGoogle(user: any) {

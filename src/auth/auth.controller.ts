@@ -39,6 +39,7 @@ export class AuthController {
         user = await this.userService.findOne(body.mobileNumber!)
         if (user) throw new BadRequestException("User already exists")
         user = await this.userService.create(body);
+        this.authService.createOTP(user)
         return this.authService.login(user)
 
     }
