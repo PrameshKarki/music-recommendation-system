@@ -1,3 +1,4 @@
+import { MailerService } from '@nestjs-modules/mailer';
 import { Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -5,6 +6,7 @@ import { Repository } from 'typeorm';
 import { IJWTPayload } from '../@types/jwt.interface';
 import { AdminsService } from '../admins/admins.service';
 import { Admin } from '../admins/entities/admin.entity';
+import EmailService from '../common/services/email.service';
 import { OTP } from '../user/entity/otp.entity';
 import { Provider, User } from '../user/entity/user.entity';
 import { UserService } from '../user/user.service';
@@ -19,7 +21,9 @@ export class AuthService {
         private otpRepository: Repository<OTP>,
         private readonly userService: UserService,
         private readonly jwtService: JwtService,
-        private readonly adminService: AdminsService
+        private readonly adminService: AdminsService,
+        private readonly mailerService: MailerService,
+        private readonly emailService: EmailService
     ) {
         this.bcryptService = new BcryptService()
     }
@@ -44,6 +48,11 @@ export class AuthService {
         // * Generate random number of 5 digits
         const number = Math.floor(10000 + Math.random() * 90000);
         // * Save the number in the database
+        const email = await this.mailerService.sendMail({
+            to: user.email,
+            subject: 'OTP for login',
+            html: await this.emailService.getOTPTemplate(number),
+        })
         await this.otpRepository.create({
             user,
             number

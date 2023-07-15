@@ -67,6 +67,12 @@ export class User extends Base {
     @OneToOne(() => OTP, otp => otp.user, { nullable: true })
     otp?: OTP
 
+    @Column({
+        default: false
+    })
+    isOTPVerified: boolean
+
+
     private tempPassword!: string;
 
     @AfterLoad()

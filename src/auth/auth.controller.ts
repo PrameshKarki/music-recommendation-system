@@ -1,13 +1,14 @@
-import { BadRequestException, Body, Controller, Get, InternalServerErrorException, Post, Req, UseGuards } from '@nestjs/common';
+import { BadRequestException, Body, Controller, Get, InternalServerErrorException, Post, Req, UnauthorizedException, UseGuards } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { Request } from 'express';
+import { OTP } from '../user/entity/otp.entity';
 import { User } from '../user/entity/user.entity';
 import { UserService } from '../user/user.service';
 import { BcryptService } from '../utils/bcrypt.service';
 import { AuthService } from './auth.service';
 import { ChangePasswordDTO } from './dto/change-password.dto';
 import { LoginDTO } from './dto/login.dto';
-import { UserRegisterDTO } from './dto/user-register.dto';
+import { OTPDTO, UserRegisterDTO } from './dto/user-register.dto';
 import { GoogleAuthGuard } from './gogle-auth.guard';
 import { JwtAuthGuard } from './jwt-auth.guard';
 import { LocalAuthGuard } from './local-auth.guard';
@@ -45,6 +46,39 @@ export class AuthController {
     }
 
     @ApiOperation({
+        summary: "Verifies OTP",
+    })
+    @Post('/user/verify-otp')
+    async verifyOTP(@Body() body: OTPDTO) {
+        let user = await User.findOne({
+            where: {
+                email: body.email
+            }
+        })
+        if (!user)
+            throw new UnauthorizedException("User not found")
+        const otp = await OTP.findOne(
+            {
+                where: {
+                    user: {
+                        id: user.id
+                    },
+                }
+            })
+        if (!otp)
+            throw new UnauthorizedException("OTP do not match")
+
+        if (otp.number !== body.otp) {
+            throw new UnauthorizedException("OTP do not match")
+        }
+        user.isOTPVerified = true;
+        user = await user.save()
+        return this.authService.login(user)
+
+    }
+
+
+    @ApiOperation({
         summary: "Login a user by email and password",
     })
     @UseGuards(LocalAuthGuard)
@@ -56,7 +90,6 @@ export class AuthController {
     @UseGuards(LocalAuthGuard)
     @Post('admin/login')
     async adminLoin(@Body() body: LoginDTO, @Req() req: Request) {
-        console.log(req.user)
         return { pass: true }
     }
 

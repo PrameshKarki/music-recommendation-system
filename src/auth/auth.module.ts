@@ -4,6 +4,7 @@ import { JwtModule } from '@nestjs/jwt';
 import { PassportModule } from '@nestjs/passport';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AdminsModule } from '../admins/admins.module';
+import EmailService from '../common/services/email.service';
 import { OTP } from '../user/entity/otp.entity';
 import { UserModule } from '../user/user.module';
 import { AuthController } from './auth.controller';
@@ -23,7 +24,7 @@ import { LocalStrategy } from './local.strategy';
       signOptions: { expiresIn: '1d' },
     }),
   ],
-  providers: [AuthService, LocalStrategy, JwtStrategy],
+  providers: [AuthService, LocalStrategy, JwtStrategy, EmailService],
   controllers: [AuthController],
   exports: [AuthService],
 })

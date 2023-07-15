@@ -1,6 +1,6 @@
 import { ApiProperty } from "@nestjs/swagger";
 import { Type } from "class-transformer";
-import { IsDateString, IsDefined, IsEmail, IsEnum, IsNotEmpty, IsOptional, IsString, IsStrongPassword, ValidateNested } from "class-validator";
+import { IsDateString, IsDefined, IsEmail, IsEnum, IsNotEmpty, IsNumber, IsOptional, IsString, IsStrongPassword, ValidateNested } from "class-validator";
 import { Gender } from "../../user/entity/userDetail.entity";
 
 export class UserDetailDTO {
@@ -37,6 +37,16 @@ export class UserDetailDTO {
     @IsNotEmpty()
     @IsEnum(Gender)
     gender?: Gender
+}
+
+export class OTPDTO {
+    @IsNotEmpty()
+    @IsEmail()
+    email: string;
+
+    @IsNotEmpty()
+    @IsNumber()
+    otp: number;
 }
 
 
