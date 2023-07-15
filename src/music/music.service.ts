@@ -13,7 +13,7 @@ export class MusicService {
   constructor(
     @InjectRepository(Music)
     private musicRepository: Repository<Music>,
-  ) { }
+  ) {}
 
   create(body: CreateMusicDto, musicFile: Media, thumbnail: Media, user: User) {
     return this.musicRepository
@@ -71,7 +71,8 @@ export class MusicService {
   async findOne(id: number | string, relations?: string[]) {
     const query = this.musicRepository
       .createQueryBuilder('music')
-      .leftJoinAndSelect('music.media', 'media');
+      .leftJoinAndSelect('music.media', 'media')
+      .leftJoinAndSelect('music.uploadedBy', 'uploadedBy');
 
     if (relations) {
       relations.forEach((relation) => {
@@ -141,4 +142,3 @@ export class MusicService {
     return query.getManyAndCount();
   }
 }
-
