@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Param, Post, Query, Request, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Patch, Post, Query, Request, UseGuards } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiQuery, ApiTags } from '@nestjs/swagger';
 import { Request as Req } from 'express';
 import { IFilter } from '../@types/pagination.interface';
@@ -38,8 +38,20 @@ export class PlaylistsController {
     const user = req.user as User;
     const thumbnail = await this.mediaService.findOne(createPlaylistDto.thumbnail, MediaType.THUMBNAIL);
     const musics = await this.musicService.findAllByIds(createPlaylistDto.musics);
-    return this.playlistsService.create(createPlaylistDto, thumbnail, musics, user);
+    return await this.playlistsService.create(createPlaylistDto, thumbnail, musics, user);
   }
+
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @Patch("/:id")
+  async update(@Param('id') id: string, @Body() createPlaylistDto: CreatePlaylistDto, @Request() req: Req) {
+    const user = req.user as User;
+    const playlist = await this.playlistsService.findOne(id, undefined, user);
+    const thumbnail = await this.mediaService.findOne(createPlaylistDto.thumbnail, MediaType.THUMBNAIL);
+    const musics = await this.musicService.findAllByIds(createPlaylistDto.musics);
+    return await this.playlistsService.update(playlist, createPlaylistDto, thumbnail, musics);
+  }
+
   @ApiOperation({
     summary: "Add a new music in a playlist. If it already exist in a playlist it simply removes (USER)",
   })

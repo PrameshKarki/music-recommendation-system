@@ -5,7 +5,6 @@ import { Media } from '../media/entities/media.entity';
 import { Music } from '../music/entities/music.entity';
 import { User } from '../user/entity/user.entity';
 import { CreatePlaylistDto } from './dto/create-playlist.dto';
-import { UpdatePlaylistDto } from './dto/update-playlist.dto';
 import { Playlist } from './entities/playlist.entity';
 
 @Injectable()
@@ -13,7 +12,7 @@ export class PlaylistsService {
   constructor(
     @InjectRepository(Playlist)
     private playlistRepository: Repository<Playlist>,
-  ) {}
+  ) { }
 
   async create(
     createPlaylistDto: CreatePlaylistDto,
@@ -27,6 +26,20 @@ export class PlaylistsService {
         thumbnail,
         musics,
         createdBy: user,
+      })
+      .save();
+  }
+  async update(
+    playlist: Playlist,
+    createPlaylistDto: CreatePlaylistDto,
+    thumbnail: Media,
+    musics: Music[],
+  ) {
+    return await this.playlistRepository
+      .merge(playlist, {
+        ...createPlaylistDto,
+        thumbnail,
+        musics,
       })
       .save();
   }
@@ -78,9 +91,7 @@ export class PlaylistsService {
     return playlist;
   }
 
-  update(id: number, updatePlaylistDto: UpdatePlaylistDto) {
-    return `This action updates a #${id} playlist`;
-  }
+
 
   remove(playlist: Playlist) {
     return this.playlistRepository.softRemove(playlist);
