@@ -5,6 +5,7 @@ import {
   Delete,
   Get,
   Param,
+  Patch,
   Post,
   Query,
   Request,
@@ -39,7 +40,7 @@ export class MusicController {
   constructor(
     private readonly musicService: MusicService,
     private readonly mediaService: MediaService,
-  ) {}
+  ) { }
 
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
@@ -65,6 +66,32 @@ export class MusicController {
       user,
     );
     return { data: music };
+  }
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @ApiOperation({
+    summary:
+      'Update Music',
+  })
+  @Patch('/:id')
+  async update(@Param('id') id: string, @Body() createMusicDto: CreateMusicDto, @Request() req: Req) {
+    const user = req.user as User;
+    const music = await this.musicService.findOne(id);
+    const musicFile = await this.mediaService.findOne(
+      createMusicDto.music,
+      MediaType.MUSIC,
+    );
+    const thumbnail = await this.mediaService.findOne(
+      createMusicDto.thumbnail,
+      MediaType.THUMBNAIL,
+    );
+    const updatedMusic = await this.musicService.update(
+      music,
+      createMusicDto,
+      musicFile,
+      thumbnail,
+    );
+    return { data: updatedMusic };
   }
 
   @ApiBearerAuth()

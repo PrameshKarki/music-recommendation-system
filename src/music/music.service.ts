@@ -13,7 +13,7 @@ export class MusicService {
   constructor(
     @InjectRepository(Music)
     private musicRepository: Repository<Music>,
-  ) {}
+  ) { }
 
   create(body: CreateMusicDto, musicFile: Media, thumbnail: Media, user: User) {
     return this.musicRepository
@@ -21,6 +21,14 @@ export class MusicService {
         ...body,
         media: [musicFile, thumbnail],
         uploadedBy: user,
+      })
+      .save();
+  }
+  update(music: Music, body: CreateMusicDto, musicFile: Media, thumbnail: Media) {
+    return this.musicRepository
+      .merge(music, {
+        ...body,
+        media: [musicFile, thumbnail],
       })
       .save();
   }
