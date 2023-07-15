@@ -82,9 +82,10 @@ export class AuthService {
         return {
             data: {
                 email: user.email,
+                isOTPVerified: user.isOTPVerified,
             },
             tokens: {
-                accessToken: this.jwtService.sign(payload),
+                accessToken: user.isOTPVerified ? this.jwtService.sign(payload) : null,
             }
         };
     }
